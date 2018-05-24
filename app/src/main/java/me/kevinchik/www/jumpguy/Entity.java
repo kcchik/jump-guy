@@ -9,71 +9,71 @@ public abstract class Entity {
     private int ay;
     private int w;
     private int h;
+    private int scale;
 
-    protected Entity(int x, int y, int vx, int vy, int ay, int w, int h) {
+    Entity(int x, int y, int ay, int w, int h, int scale) {
         this.x = x;
         this.y = y;
-        this.vx = vx;
-        this.vy = vy;
         this.ay = ay;
         this.w = w;
         this.h = h;
+        this.scale = scale;
     }
 
-    protected int getX() {
+    int getX() {
         return x;
     }
 
-    protected void setX(int x) {
+    void setX(int x) {
         this.x = x;
     }
 
-    protected int getY() {
+    int getY() {
         return y;
     }
 
-    protected void setY(int y) {
+    void setY(int y) {
         this.y = y;
     }
 
-    protected int getVx() {
+    int getVx() {
         return vx;
     }
 
-    protected void setVx(int vx) {
+    void setVx(int vx) {
         this.vx = vx;
     }
 
-    protected int getVy() {
+    int getVy() {
         return vy;
     }
 
-    protected void setVy(int vy) {
+    void setVy(int vy) {
         this.vy = vy;
     }
 
-    protected int getAy() {
+    int getAy() {
         return ay;
     }
 
-    protected void setAy(int ay) {
+    void setAy(int ay) {
         this.ay = ay;
     }
 
-    protected int getW() {
+    int getW() {
         return w;
     }
 
-    protected void setW(int w) {
-        this.w = w;
-    }
-
-    protected int getH() {
+    int getH() {
         return h;
     }
 
-    protected void setH(int h) {
-        this.h = h;
+    int getScaledW() {
+        return w / scale;
+    }
+
+    int getScaledH() {
+        return h / scale;
     }
 
 }

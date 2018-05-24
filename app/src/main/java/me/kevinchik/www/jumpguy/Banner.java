@@ -3,13 +3,13 @@ package me.kevinchik.www.jumpguy;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 
-public class Title extends Entity{
+public class Banner extends Entity{
 
     private Animation animation = new Animation();
     private Bitmap[] image;
 
-    Title(Bitmap res) {
-        super(0, 0, 0, 0, 0, 270, 480);
+    Banner(Bitmap res) {
+        super(0, 0, 0, 270, 480, 1);
         image = new Bitmap[2];
         for (int i = 0; i < image.length; i++) {
             image[i] = Bitmap.createBitmap(res, i * getW(), 0, getW(), getH());
@@ -29,8 +29,7 @@ public class Title extends Entity{
     }
 
     public void setImage(Bitmap res) {
-        for (int i = 0; i < image.length; i++) {
+        for (int i = 0; i < image.length; i++)
             image[i] = Bitmap.createBitmap(res, i * getW(), 0, getW(), getH());
-        }
     }
 }

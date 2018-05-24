@@ -5,7 +5,6 @@ import android.content.Context;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
-import android.graphics.Rect;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
@@ -26,7 +25,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, SensorE
     private final SensorManager sensorManager;
     private final Sensor sensor;
     protected GameThread thread;
-    private Title title;
+    private Banner title;
     private Background bg;
     private Player player;
     private ArrayList<Platform> platform;
@@ -43,6 +42,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, SensorE
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
         sensorManager = (SensorManager)getContext().getSystemService(Context.SENSOR_SERVICE);
+        assert sensorManager != null;
         sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
     }
 
@@ -51,9 +51,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, SensorE
 
             player.update();
             title.update();
-            for(int i = 0; i < platform.size(); i++) {
+            for (int i = 0; i < platform.size(); i++)
                 platform.get(i).update();
-            }
 
             if (player.isPlaying()) {
                 title.setAy(-4);
@@ -64,45 +63,36 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, SensorE
                     title.setImage(BitmapFactory.decodeResource(getResources(), R.drawable.score));
                 }
                 if (player.getTmpVy() == 1) {
-                    if (player.getY() < CEILING) {
-                        player.setTmpY(player.getY());
+                    if (player.getY() < CEILING)
                         player.setTmpVy(player.getVy());
-                    }
-                    for (Platform p : platform) {
+                    for (Platform p : platform)
                         p.setVy(0);
-                    }
                 } else {
-                    if (player.getVy() <= 0) {
+                    if (player.getVy() <= 0)
                         player.setY(CEILING);
-                    } else {
+                    else
                         player.setTmpVy(1);
-                    }
-                    for (Platform p : platform) {
+                    for (Platform p : platform)
                         p.setVy(-player.getVy());
-                    }
                 }
 
                 int count = 0;
                 int prvY = 0;
-                for (int i = 0; i < platform.size(); i++) {
-                    if (platform.get(i).getY() < 0) {
+                for (int i = 0; i < platform.size(); i++)
+                    if (platform.get(i).getY() < 0)
                         count++;
-                    } else if (platform.get(i).getY() + 20 > HEIGHT) {
+                    else if (platform.get(i).getY() + 20 > HEIGHT)
                         platform.remove(i);
-                    } else {
+                    else
                         prvY = platform.get(i).getY();
-                    }
-                }
-                if (count == 0) {
+                if (count == 0)
                     platform.add(new Platform(BitmapFactory.decodeResource(getResources(), R.drawable.platform), (int) (Math.random() * (WIDTH - 64)), prvY - 32 - (int) (Math.random() * 64)));
-                }
 
-                for (int i = 0; i < platform.size(); i++) {
+                for (int i = 0; i < platform.size(); i++)
                     if (player.getVy() > 2 && player.feet().intersect(platform.get(i).body())) {
                         player.setY(platform.get(i).getY() - player.getH());
                         player.setVy(player.getJump());
                     }
-                }
 
                 if (player.getY() > HEIGHT) {
                     player.setAlive(false);
@@ -123,9 +113,8 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, SensorE
             final int savedState = canvas.save();
             canvas.scale(scaleFactorX, scaleFactorY);
             bg.draw(canvas);
-            for(int i = 0; i < platform.size(); i++) {
+            for(int i = 0; i < platform.size(); i++)
                 platform.get(i).draw(canvas);
-            }
             player.draw(canvas);
             title.draw(canvas);
 
@@ -157,21 +146,23 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, SensorE
         }
     }
 
+    void initEntities() {
+        bg = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.menu));
+        platform = new ArrayList<>();
+        for (int i = 0; i < 10; i++)
+            platform.add(new Platform(BitmapFactory.decodeResource(getResources(), R.drawable.platform), 30 * i - 10, 400));
+        for (int i = 7; i >= 0; i--)
+            platform.add(new Platform(BitmapFactory.decodeResource(getResources(), R.drawable.platform), (int) (Math.random() * (WIDTH - 64)), 50 * i));
+        player = new Player(BitmapFactory.decodeResource(getResources(), R.drawable.player));
+    }
+
     protected void start() {
         if (fade[0] != 0 && fade[1] == 0) {
 //            finalScore = player.getScore();
             fade[0] += 15;
             if (fade[0] + 15 >= 255) {
                 fade[1] = 1;
-                bg = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.menu));
-                platform = new ArrayList<>();
-                for (int i = 0; i < 7; i++) {
-                    platform.add(new Platform(BitmapFactory.decodeResource(getResources(), R.drawable.platform), 40 * i, 400));
-                }
-                for (int i = 7; i >= 0; i--) {
-                    platform.add(new Platform(BitmapFactory.decodeResource(getResources(), R.drawable.platform), (int) (Math.random() * (WIDTH - 64)), 50 * i));
-                }
-                player = new Player(BitmapFactory.decodeResource(getResources(), R.drawable.player));
+                initEntities();
                 title.setY(0);
             }
         } else if (fade[0] != 0 && fade[1] == 1) {
@@ -189,17 +180,9 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, SensorE
     public void surfaceCreated(SurfaceHolder holder) {
         sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
         start();
-        bg = new Background(BitmapFactory.decodeResource(getResources(), R.drawable.menu));
-        title = new Title(BitmapFactory.decodeResource(getResources(), R.drawable.title));
-        platform = new ArrayList<>();
-        for (int i = 0; i < 10; i++) {
-            platform.add(new Platform(BitmapFactory.decodeResource(getResources(), R.drawable.platform), 30 * i - 10, 400));
-        }
-        for (int i = 7; i >= 0; i--) {
-            platform.add(new Platform(BitmapFactory.decodeResource(getResources(), R.drawable.platform), (int) (Math.random() * (WIDTH - 64)), 50 * i));
-        }
+        initEntities();
+        title = new Banner(BitmapFactory.decodeResource(getResources(), R.drawable.title));
 //        score = new Score(getContext());
-        player = new Player(BitmapFactory.decodeResource(getResources(), R.drawable.player));
         player.setAlive(true);
         player.setPlaying(false);
         thread.setRunning(true);
@@ -213,25 +196,29 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, SensorE
     public void surfaceDestroyed(SurfaceHolder holder) {
         sensorManager.unregisterListener(this);
         boolean retry = true;
-        while (retry) {
+        while (retry)
             try {
                 thread.setRunning(false);
                 thread.join();
                 retry = false;
-            } catch(Exception e) {
+            } catch (InterruptedException e) {
                 e.printStackTrace();
             }
-        }
     }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+        performClick();
         if (event.getAction() == MotionEvent.ACTION_DOWN) {
             player.setPlaying(true);
             return true;
         }
-
         return super.onTouchEvent(event);
+    }
+
+    @Override
+    public boolean performClick() {
+        return super.performClick();
     }
 
     @Override
@@ -239,11 +226,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, SensorE
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             float tilt = event.values[0];
             player.setVx((int)(Math.floor(tilt) * -2));
-            if (player.getVx() < 0) {
+            if (player.getVx() < 0)
                 player.setFacingLeft(true);
-            } else {
+            else
                 player.setFacingLeft(false);
-            }
         }
     }
 

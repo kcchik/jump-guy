@@ -7,13 +7,14 @@ import android.graphics.Typeface;
 
 public class Score extends Entity{
 
+    private final String PATH = "fonts/ARCADECLASSIC.TTF";
     private Paint paint;
     private int size;
     private int a, r, g, b;
 
     protected Score(Context context) {
-        super(0, 0, 0, 0, 0, 0, 0);
-        Typeface typeface = Typeface.createFromAsset(context.getAssets(), "fonts/ARCADECLASSIC.TTF");
+        super(0, 0, 0, 0, 0, 1);
+        Typeface typeface = Typeface.createFromAsset(context.getAssets(), PATH);
         paint = new Paint();
         paint.setTypeface(typeface);
     }

@@ -8,7 +8,7 @@ public class Background extends Entity{
     private Bitmap image;
 
     Background(Bitmap res) {
-        super(0, 0, 0, 0, 0, 54, 96);
+        super(0, 0, 0, 54, 96, 1);
         image = Bitmap.createBitmap(res, 0, 0, getW(), getH());
         image = Bitmap.createScaledBitmap(image, Game.WIDTH, Game.HEIGHT, false);
     }
