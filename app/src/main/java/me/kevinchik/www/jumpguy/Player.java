@@ -10,11 +10,12 @@ public class Player extends Entity {
     private boolean alive;
     private boolean facingLeft = true;
     private int tmpVy = 1;
+    private int tmpY;
     private int score = 0;
     Bitmap[] image = new Bitmap[2];
 
     Player(Bitmap res) {
-        super(Game.WIDTH / 2 - 9, 370, 1, 18, 24, 3);
+        super(Game.WIDTH / 2 - 9, 376, 1, 18, 24, 3);
         for (int i = 0; i < image.length; i++) {
             image[i] = Bitmap.createBitmap(res, i * getScaledW(), 0, getScaledW(), getScaledH());
             image[i] = Bitmap.createScaledBitmap(image[i], getW(), getH(), false);
@@ -29,6 +30,8 @@ public class Player extends Entity {
             setX(-getW());
 
         setX(getX() + getVx());
+//        setVx(getVx() + getAx());
+
 
         if (isPlaying()) {
             setY(getY() + getVy());
@@ -73,6 +76,14 @@ public class Player extends Entity {
 
     int getTmpVy() {
         return tmpVy;
+    }
+
+    public int getTmpY() {
+        return tmpY;
+    }
+
+    public void setTmpY(int tmpY) {
+        this.tmpY = tmpY;
     }
 
     int getJump() {

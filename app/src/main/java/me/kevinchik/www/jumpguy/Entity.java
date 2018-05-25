@@ -6,6 +6,7 @@ public abstract class Entity {
     private int y;
     private int vx;
     private int vy;
+    private int ax;
     private int ay;
     private int w;
     private int h;
@@ -52,6 +53,14 @@ public abstract class Entity {
         this.vy = vy;
     }
 
+    public int getAx() {
+        return ax;
+    }
+
+    public void setAx(int ax) {
+        this.ax = ax;
+    }
+
     int getAy() {
         return ay;
     }
@@ -67,6 +76,7 @@ public abstract class Entity {
     int getH() {
         return h;
     }
+
 
     int getScaledW() {
         return w / scale;

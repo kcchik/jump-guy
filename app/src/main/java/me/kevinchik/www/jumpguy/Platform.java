@@ -23,7 +23,7 @@ public class Platform extends Entity {
     }
 
     Rect body() {
-        return new Rect(getX(), getY(), getX() + getW(), getY() + 20);
+        return new Rect(getX(), getY(), getX() + getW(), getY() + 30);
     }
 
 }

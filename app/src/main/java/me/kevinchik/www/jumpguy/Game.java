@@ -15,6 +15,7 @@ import android.view.SurfaceView;
 
 import java.util.ArrayList;
 
+@SuppressLint("ViewConstructor")
 public class Game extends SurfaceView implements SurfaceHolder.Callback, SensorEventListener {
 
     public static final int WIDTH = 270;
@@ -29,10 +30,10 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, SensorE
     private Background bg;
     private Player player;
     private ArrayList<Platform> platform;
-//    private Score score;
+    private Score score;
     private int[] fade = {0, 0};
-//    private boolean startScreen = true;
-//    private int finalScore;
+    private boolean startScreen = true;
+    private int finalScore;
 
     protected Game(Context context, int screenWidth, int screenHeight) {
         super(context);
@@ -59,7 +60,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, SensorE
                 if (title.getY() <= -264) {
                     title.setAy(0);
                     title.setVy(0);
-//                    startScreen = false;
+                    startScreen = false;
                     title.setImage(BitmapFactory.decodeResource(getResources(), R.drawable.score));
                 }
                 if (player.getTmpVy() == 1) {
@@ -74,6 +75,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, SensorE
                         player.setTmpVy(1);
                     for (Platform p : platform)
                         p.setVy(-player.getVy());
+                    player.setScore(player.getScore() + 1);
                 }
 
                 int count = 0;
@@ -85,12 +87,18 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, SensorE
                         platform.remove(i);
                     else
                         prvY = platform.get(i).getY();
+
                 if (count == 0)
                     platform.add(new Platform(BitmapFactory.decodeResource(getResources(), R.drawable.platform), (int) (Math.random() * (WIDTH - 64)), prvY - 32 - (int) (Math.random() * 64)));
 
-                for (int i = 0; i < platform.size(); i++)
-                    if (player.getVy() > 2 && player.feet().intersect(platform.get(i).body())) {
-                        player.setY(platform.get(i).getY() - player.getH());
+                if (player.getVy() == 0) {
+                    player.setTmpY(player.getY());
+                }
+
+                for (Platform p : platform)
+                    if (player.getTmpY() + player.getH() <= p.getY()
+                            && player.feet().intersect(p.body())) {
+                        player.setY(p.getY() - player.getH());
                         player.setVy(player.getJump());
                     }
 
@@ -120,25 +128,23 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, SensorE
 
             Paint paint = new Paint();
 
-//            if (!startScreen && !player.isPlaying()) {
-//                Rect bounds = new Rect();
-//                paint.getTextBounds(String.valueOf(finalScore), 0, String.valueOf(finalScore).length(), bounds);
-//                int scoreWidth = bounds.width();
-//                score.setX(WIDTH / 2 - scoreWidth * 3);
-//                score.setSize(40);
-//                score.setY(218);
-//                score.setARGB(255, 229, 147, 0);
-//                score.draw(canvas, finalScore);
-//                score.setY(215);
-//                score.setARGB(255, 239, 186, 0);
-//                score.draw(canvas, finalScore);
-//            } else {
-//                score.setX(10);
-//                score.setY(50);
-//                score.setSize(60);
-//                score.setARGB(255, 255, 255, 255);
-//                score.draw(canvas, player.getScore());
-//            }
+            if (!startScreen && !player.isPlaying()) {
+                score.setSize(30);
+                score.setY(216);
+                score.setARGB(255, 229, 147, 0);
+                score.draw(canvas, finalScore);
+                score.setY(214);
+                score.setARGB(255, 239, 186, 0);
+                score.draw(canvas, finalScore);
+            } else {
+                score.setSize(30);
+                score.setY(32);
+                score.setARGB(255, 100, 100, 100);
+                score.draw(canvas, player.getScore());
+                score.setY(30);
+                score.setARGB(255, 255, 255, 255);
+                score.draw(canvas, player.getScore());
+            }
 
             paint.setARGB(fade[0], 0, 0, 0);
             canvas.drawRect(0, 0, WIDTH, HEIGHT, paint);
@@ -158,7 +164,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, SensorE
 
     protected void start() {
         if (fade[0] != 0 && fade[1] == 0) {
-//            finalScore = player.getScore();
+            finalScore = player.getScore();
             fade[0] += 15;
             if (fade[0] + 15 >= 255) {
                 fade[1] = 1;
@@ -182,7 +188,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, SensorE
         start();
         initEntities();
         title = new Banner(BitmapFactory.decodeResource(getResources(), R.drawable.title));
-//        score = new Score(getContext());
+        score = new Score(getContext());
         player.setAlive(true);
         player.setPlaying(false);
         thread.setRunning(true);
@@ -225,7 +231,7 @@ public class Game extends SurfaceView implements SurfaceHolder.Callback, SensorE
     public void onSensorChanged(SensorEvent event) {
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             float tilt = event.values[0];
-            player.setVx((int)(Math.floor(tilt) * -2));
+            player.setVx((int)(Math.floor(tilt) * -2.0));
             if (player.getVx() < 0)
                 player.setFacingLeft(true);
             else
